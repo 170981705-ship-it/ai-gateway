@@ -552,6 +552,10 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     try { localStorage.setItem(KEY_LOG, JSON.stringify(a.slice(0, 120))); } catch (e) { }
   }
   function today() { var d = new Date(), p = function (x) { return (x < 10 ? '0' : '') + x; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  // 记录时间戳必须写「本地时间」：原来用 toISOString()（UTC），中国时区每天 00:00~08:00
+  // 存下来的是前一天，而「今日」过滤用的是本地日期 → 凌晨发的卡在记录页里全是空的，时间还差 8 小时。
+  // 桌面端 keygen_ui.py 用 time.strftime（本地），两边要能对账就必须同源。
+  function stamp() { var d = new Date(), p = function (x) { return (x < 10 ? '0' : '') + x; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()); }
   function renderLog() {
     var all = readLog(), list = all.filter(function (r) { return (r.ts || '').slice(0, 10) === today(); });
     $('#logStat').textContent = '本单共 ' + all.length + ' 条';
@@ -621,7 +625,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
       planCN: NAMES[plan] || plan, exp: exp, msg: msg, extra: extra
     });
     bindResult($('#newRes'));
-    pushLog({ ts: new Date().toISOString().replace('T', ' ').slice(0, 19).replace('Z', ''), action: 'new', plan: plan, license: card, expire: md2ymd(exp), machine: req, activation: act });
+    pushLog({ ts: stamp(), action: 'new', plan: plan, license: card, expire: md2ymd(exp), machine: req, activation: act });
     renderLog();
     var b = $('#msgBox');
     if (b) setTimeout(function () { copy(b.textContent, function (v) { if (v) toast('整段已复制'); }); }, 260);
@@ -643,7 +647,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
       planCN: NAMES[p.plan] || p.plan, exp: p.exp, msg: msg, extra: extra
     });
     bindResult($('#actRes'));
-    pushLog({ ts: new Date().toISOString().replace('T', ' ').slice(0, 19).replace('Z', ''), action: 'act', plan: p.plan, license: c, expire: md2ymd(p.exp), machine: req, activation: act });
+    pushLog({ ts: stamp(), action: 'act', plan: p.plan, license: c, expire: md2ymd(p.exp), machine: req, activation: act });
     renderLog();
     var b = $('#msgBox');
     if (b) setTimeout(function () { copy(b.textContent, function (v) { if (v) toast('整段已复制'); }); }, 260);

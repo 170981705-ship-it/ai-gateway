@@ -2,7 +2,7 @@
   "name": "发卡 · AI 聚合模型集中营",
   "short_name": "发卡",
   "description": "夜间/外出时手机端生成兑换码，即刻发给客户",
-  "start_url": "./phone_keygen.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
