@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-page-node-id="h1hM5wEuIfJ3aenYCEnJjy">
+<head data-page-node-id="rDH7KV6mCY9NPrHCEDDkCr">
+<meta charset="utf-8" data-page-node-id="KPyG6DtezF88hfdLCm8nSz">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" data-page-node-id="VEtCJaFEDI8EK4CaBVyZkD">
+<title>发卡 · AI 聚合模型集中营</title>
+<meta name="apple-mobile-web-app-capable" content="yes" data-page-node-id="ZVQ0CDlBF0W0iRdBd9ALtr">
+<meta name="mobile-web-app-capable" content="yes" data-page-node-id="wSKDMEy8DvEndq22JueJaP">
+<meta name="apple-mobile-web-app-status-bar-style" content="default" data-page-node-id="SPm4oC7aLZXyHRIpjwOMtJ">
+<meta name="theme-color" content="#7B93A4" data-page-node-id="tvUIe3SGuNDN4DkcuFzdig">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<style>
+:root{
+  --bg:#F4F7F9; --card:#FFFFFF; --line:#E2E8ED; --ink:#21313C; --sub:#6B8091;
+  --brand:#7B93A4; --brand-d:#5E7688; --brand-l:#EAF0F4;
+  --ok:#2E9E6B; --warn:#C0803A; --err:#C4584B;
+  --r:14px; --sh:0 1px 2px rgba(33,49,60,.06),0 6px 18px rgba(33,49,60,.06);
+}
+html[data-theme="dark"]{
+  --bg:#141C21; --card:#1D272E; --line:#2C3A44; --ink:#E6EDF2; --sub:#93A7B4;
+  --brand:#7B93A4; --brand-d:#9FB4C2; --brand-l:#24313A;
+  --ok:#4FC48C; --warn:#E0A55C; --err:#E2786B;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  padding:0 0 env(safe-area-inset-bottom);}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px 40px}
+
+/* ---------- 顶栏 ---------- */
+header{position:sticky;top:0;z-index:20;background:var(--bg);
+  padding:calc(env(safe-area-inset-top) + 12px) 0 10px;border-bottom:1px solid var(--line);}
+.hrow{display:flex;align-items:center;gap:10px}
+h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.2px;flex:1}
+.clock{font-variant-numeric:tabular-nums;font-size:15px;color:var(--sub);font-weight:600}
+.ibtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;
+  width:38px;height:38px;font-size:16px;cursor:pointer;display:grid;place-items:center;padding:0}
+.ibtn:active{transform:scale(.94)}
+.tabs{display:flex;gap:8px;margin-top:12px}
+.tab{flex:1;text-align:center;padding:10px 0;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--sub);font-size:15px;font-weight:500;cursor:pointer}
+.tab.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+
+/* ---------- 卡片 ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh);padding:16px;margin-top:14px}
+.lbl{font-size:13px;color:var(--sub);margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+.lbl b{color:var(--ink);font-weight:600}
+
+/* ---------- 套餐 ---------- */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.plan{border:1.5px solid var(--line);border-radius:12px;background:var(--bg);
+  padding:10px 4px;text-align:center;cursor:pointer;position:relative;transition:.12s}
+.plan .n{font-size:15px;font-weight:600;line-height:1.3}
+.plan .p{font-size:12px;color:var(--sub);margin-top:2px;font-variant-numeric:tabular-nums}
+.plan .d{font-size:11px;color:var(--sub);opacity:.85}
+.plan.on{border-color:var(--brand);background:var(--brand-l)}
+.plan.on .n{color:var(--brand-d)}
+html[data-theme="dark"] .plan.on .n{color:var(--brand)}
+
+/* ---------- 输入 ---------- */
+input[type=text]{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--bg);
+  color:var(--ink);padding:13px 12px;font-size:17px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.6px;outline:none}
+input[type=text]:focus{border-color:var(--brand)}
+.hint{font-size:12px;color:var(--sub);margin-top:7px;line-height:1.5}
+.hint.err{color:var(--err)}
+
+/* ---------- 按钮 ---------- */
+.go{width:100%;margin-top:16px;border:0;border-radius:13px;background:var(--brand);color:#fff;
+  font-size:17px;font-weight:600;padding:15px 0;cursor:pointer;letter-spacing:.5px}
+.go:active{opacity:.85}
+.go.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);font-size:15px;padding:12px 0}
+.row2{display:flex;gap:8px}
+
+/* ---------- 结果 ---------- */
+.res{background:var(--brand-l);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px}
+.res-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.res-h .t{font-size:14px;font-weight:600;color:var(--brand-d)}
+html[data-theme="dark"] .res-h .t{color:var(--brand)}
+.badge{font-size:12px;background:var(--ok);color:#fff;border-radius:999px;padding:2px 10px;font-weight:600}
+.kv{margin-bottom:12px}
+.kv:last-child{margin-bottom:0}
+.kv .k{font-size:12px;color:var(--sub);display:flex;align-items:center;justify-content:space-between}
+/* 卡号 31 字符、激活码 17 字符：字太大在 390px 屏上会折成两行（且断在尾字符上很丑），
+   这里按屏宽自适应，保证手机上一行看完、一键复制。 */
+.kv .v{font-size:clamp(13.5px,4.35vw,19px);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-weight:600;letter-spacing:.5px;margin-top:3px;overflow-wrap:anywhere;
+  user-select:all;-webkit-user-select:all}
+.copyable .v{color:var(--brand-d)}
+html[data-theme="dark"] .copyable .v{color:var(--brand)}
+.mini{border:1px solid var(--line);background:var(--card);color:var(--sub);border-radius:9px;
+  padding:3px 10px;font-size:12px;cursor:pointer;margin-left:8px}
+.mini:active{transform:scale(.95)}
+.msg{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:11px;
+  padding:12px;font-size:14px;white-space:pre-wrap;line-height:1.65;user-select:all;-webkit-user-select:all}
+.upsell{margin-top:10px;font-size:13px;color:var(--warn);background:var(--card);
+  border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:9px 11px;line-height:1.55}
+
+/* ---------- 记录 ---------- */
+.rec{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rec:last-child{border-bottom:0}
+.rec .tm{font-variant-numeric:tabular-nums;color:var(--sub);font-size:12px;width:52px;flex:none}
+.rec .bd{flex:1;min-width:0}
+.rec .id{font-family:ui-monospace,Menlo,monospace;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec .pl{font-size:12px;color:var(--sub)}
+.empty{text-align:center;color:var(--sub);font-size:13px;padding:22px 0}
+footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-align:center}
+.view{display:none}.view.on{display:block}
+
+/* ---------- 口令门（未解锁时挡住整个页面）---------- */
+.gate{position:fixed;inset:0;z-index:99;background:var(--bg);
+  display:grid;place-items:center;padding:calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 20px)}
+.gate.hide{display:none}
+.gate-box{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);box-shadow:var(--sh);padding:20px 18px}
+.gate-t{font-size:17px;font-weight:600;letter-spacing:.2px}
+.gate-s{font-size:12.5px;color:var(--sub);margin-top:4px}
+.gate-b{margin-top:16px}
+.gate-w{font-size:12px;color:var(--sub);line-height:1.7;margin-top:12px;
+  border-top:1px dashed var(--line);padding-top:11px}
+.gate .go{width:100%;margin-top:12px}
+</style>
+</head>
+<body data-page-node-id="rF2hCokWv3ySpF5A6fXMLE">
+
+<!-- ============ 口令门 ============ -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-t">发卡口令</div>
+    <div class="gate-s" id="gateSub">本机还没设过口令，输入一次即可，以后自动记住</div>
+    <div class="gate-b">
+      <input type="password" id="passIn" placeholder="输入发卡口令" autocomplete="off" autocorrect="off"
+             autocapitalize="off" spellcheck="false">
+      <button class="go" id="passBtn">解锁</button>
+    </div>
+    <div class="gate-w">
+      口令 = 这套卡密的签名密钥，电脑端用的是同一个。<br>
+      「换一个口令」会让已发出的旧卡<b>全部作废</b>；忘了口令也只能重设（旧卡一样全废）。
+    </div>
+    <button class="mini" id="passReset" style="margin-top:10px">换一个口令</button>
+  </div>
+</div>
+
+<div class="wrap" data-page-node-id="z2xA2maJLdQkses4Jaz5wj">
+
+<header data-page-node-id="QzpPsb72oHd6IoXkq2rheG">
+  <div class="hrow" data-page-node-id="gYpC34ArEm6Wk6suuKcQSg">
+    <h1 data-page-node-id="FvzZMSQsFski3MoerqEtOg">发卡 · AI 聚合模型集中营</h1>
+    <span class="clock" id="clock" data-page-node-id="oc6ST2yWKrqAbAC0UpP3RR">--:--:--</span>
+    <button class="ibtn" id="themeBtn" title="切换深浅色" data-page-node-id="GCiuKkfhflokCfEDZ34xGi">◐</button>
+  </div>
+  <div class="tabs" data-page-node-id="cxkxV86t0HLnPzXoTT2bV9">
+    <div class="tab on" data-view="new" data-page-node-id="9LPA7et4H8QvgoaolcH8Q8">新客户发卡</div>
+    <div class="tab" data-view="act" data-page-node-id="YwajyOT0lSVxDJrOhwBTWC">老客户补码</div>
+    <div class="tab" data-view="log" data-page-node-id="jnIlr4AKSkCBn28WcHMWd1">今日记录</div>
+  </div>
+</header>
+
+<!-- ============ 新客户 ============ -->
+<section class="view on" id="v-new" data-page-node-id="3lHX30vijzyWAr7ZObiRRT">
+  <div class="card" data-page-node-id="qK8hBygNazFIab7pfyJOmf">
+    <p class="lbl" data-page-node-id="MNelYPK7Q5IHRYT6OY6BqD"><b data-page-node-id="jFyi4QoDxT6kVKlkF1vBtv">选套餐</b><span id="planTip" data-page-node-id="Iop7lmY9b7V1gKjnPAPg8f">点一下就选好</span></p>
+    <div class="plans" id="plans" data-page-node-id="RPWyi1FqzoRz5uEHF8q128"></div>
+  </div>
+
+  <div class="card" data-page-node-id="wQaC8WiMltFXYffXO3ggVP">
+    <p class="lbl" data-page-node-id="A32cXFRkeK5fgrJIRIYDrG"><b data-page-node-id="Hwopup64MRXBVka5DAoqLZ">客户请求码</b><span data-page-node-id="4kWcu7TWX1i14WtFxBPt2L">让客户在控制台「授权信息」里点复制</span></p>
+    <input type="text" id="reqIn" placeholder="REQ-01234567-ABCD" autocomplete="off" autocorrect="off"
+           autocapitalize="characters" spellcheck="false" inputmode="text" data-page-node-id="AIvFtVpmAfnBxot6nUsa1f">
+    <p class="hint" id="reqHint" data-page-node-id="PCBfvQv1HaS7bdYTB6293j">格式：REQ- 开头，共 17 位（含横线）。自动忽略空格和多余前缀。</p>
+  </div>
+
+  <button class="go" id="btnGen" data-page-node-id="RJ7RhIKucGb4EokEHjZ8Mz">生成并发给客户</button>
+
+  <div id="newRes" data-page-node-id="uX9HBpCsG6YizYbIksptrC"></div>
+</section>
+
+<!-- ============ 老客户补码 ============ -->
+<section class="view" id="v-act" data-page-node-id="sLzvbP23ouC1v7bmiMuORP">
+  <div class="card" data-page-node-id="FnERb4FESEr79wbrG2uD6T">
+    <p class="lbl" data-page-node-id="brFnNXHHvp4Q9U2tTEHI4Y"><b data-page-node-id="G2cw8GIStpnFJEtTouAiCj">客户已有卡号</b><span data-page-node-id="NG6GI3dkI1Ate7ydKBQqFD">换电脑 / 重装系统用</span></p>
+    <input type="text" id="cardIn" placeholder="GW1-..." autocomplete="off" autocorrect="off"
+           autocapitalize="characters" spellcheck="false" data-page-node-id="mFUNZUJNfVtf5Ai0yn9XcJ">
+  </div>
+  <div class="card" data-page-node-id="m1PLpv2MtMjHU4ZYcIFXzH">
+    <p class="lbl" data-page-node-id="u0VI9C6wKo6Kmd2AvFyauH"><b data-page-node-id="weuHywwRwNk8xGJFLrq0jN">客户请求码</b></p>
+    <input type="text" id="reqIn2" placeholder="REQ-01234567-ABCD" autocomplete="off" autocorrect="off"
+           autocapitalize="characters" spellcheck="false" data-page-node-id="HkI6C6BUx2Gt3BamdQprlQ">
+  </div>
+  <button class="go" id="btnGen2" data-page-node-id="mjpQjKqXqfohwHJWKbF9eq">只出激活码</button>
+  <div id="actRes" data-page-node-id="MhYrHe9gvCxSUVLl5qtimu"></div>
+</section>
+
+<!-- ============ 记录 ============ -->
+<section class="view" id="v-log" data-page-node-id="fFU0Mgo6UASQq0HNQVsVsi">
+  <div class="card" data-page-node-id="X3cWmH98bbMqjmlKmDaPQ8">
+    <p class="lbl" data-page-node-id="M7jHCj4cDzhrcvNOw4DOMj"><b data-page-node-id="5MGZ6V7QKve19X3qETW26x">今天发出去的</b><span id="logStat" data-page-node-id="ui6IklDvfBIpNT9n6LKyPE"></span></p>
+    <div id="logList" data-page-node-id="HKEn4exAQjuHdjAuLNvibE"><div class="empty" data-page-node-id="VD6irM5J8wHFGYKkKRuMuD">还没有记录</div></div>
+  </div>
+  <div class="card" data-page-node-id="LC6mcAx4zmAArs7dMpOaW1">
+    <div class="row2" data-page-node-id="VfICRwu9xGiIwaeyKxDLC4">
+      <button class="go ghost" id="btnExport" style="flex:1" data-page-node-id="1bmD92EeBmx22eKzckxvLz">复制成流水（贴回电脑对账）</button>
+      <button class="go ghost" id="btnClear" style="flex:1;color:var(--err)" data-page-node-id="YLOhsU37XjT1hWmgpiTrob">清空记录</button>
+    </div>
+    <p class="hint" style="margin-top:10px" data-page-node-id="jHTBN59DsmM7JPx7VdxZ8K">记录只存在这台手机浏览器里，清缓存或换手机会丢。重要的单记得顺手回头贴一封到电脑。</p>
+  </div>
+</section>
+
+<footer data-page-node-id="bDeZHnswDC9PEkKoD2lzEn">
+  本工具与电脑上「发卡.bat」用的是同一套签名密钥<br data-page-node-id="2Volu0F5E9tb9McNSqtGvM">生成的卡号 / 激活码完全等价 —— 收到请直接发给客户，别在聊天框里改字符
+</footer>
+</div>
+
+<script id="algo">
+/* ============================================================
+   算法层：与 license.py 1:1 对齐（改动必须两边同步）
+   卡号 GW1-<到期8>-<套餐2>-<随机4>-<签名8>
+        签名 = base32( HMAC-SHA256(SECRET, 卡体) ) 前 8 位（RFC4648，大写，无补位）
+   激活码 ACT-XXXX-XXXX-XXXX = base32( HMAC-SHA256(SECRET, 卡号|请求码) ) 前 15 位补 X
+   刻意不用 crypto.subtle —— SubtleCrypto 只在 https/localhost 可用，
+   而我们要保证「手机断网 + 本地文件直接打开」也能生码，所以 SHA-256 自己实现。
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* ---- 密钥：由「发卡口令」派生，不再是明文常量 ----
+     这个页面要部署到公开的 GitHub Pages。只要它能离线生码，签名密钥就必须在前端，
+     明文写死 = 贴在世界墙上，任何人点一下就能给自己签一张能通的卡。
+     所以改成：SECRET = PBKDF2-SHA256(发卡口令, SALT, ITERS, 32字节)
+     本页对外只暴露 SALT / ITERS 两个公开常量；真正保密的只剩那个口令，
+     它只存在使用者的脑子里 + 本机 localStorage。把整个网页抄走也只能暴力枚举口令。 */
+  var SALT  = 'GW1-KEYGEN-SALT-V1';
+  var ITERS = 200000;
+  var SECRET = null;                 // 解锁前为 null；unlock() 后是 64 字符 hex
+
+  // ---- PBKDF2-SHA256（PKCS#5 v2.0）---- 返回 hex 字符串
+  function pbkdf2Sha256(password, salt, iterations, dkLen) {
+    var pw = utf8(password), sl = utf8(salt), j, k, i;
+    var out = [], blockNo = 1;
+    while (out.length < dkLen) {
+      var blk = new Uint8Array(sl.length + 4);
+      blk.set(sl, 0);
+      blk[sl.length]     = (blockNo >> 24) & 255;
+      blk[sl.length + 1] = (blockNo >> 16) & 255;
+      blk[sl.length + 2] = (blockNo >> 8) & 255;
+      blk[sl.length + 3] = blockNo & 255;
+      var U = hmacSha256(pw, blk), T = new Uint8Array(U);
+      for (j = 1; j < iterations; j++) {
+        U = hmacSha256(pw, U);
+        for (k = 0; k < 32; k++) T[k] ^= U[k];
+      }
+      for (k = 0; k < 32; k++) out.push(T[k]);
+      blockNo++;
+    }
+    var s = '';
+    for (i = 0; i < out.length; i++) s += (out[i] < 16 ? '0' : '') + out[i].toString(16);
+    return s;
+  }
+
+  function derive(pass) { return pbkdf2Sha256(pass, SALT, ITERS, 32); }
+  function unlock(dkHex) { SECRET = dkHex; SECRET_BYTES = hex2bin(dkHex); }
+  function isReady() { return !!SECRET; }
+  var SECRET_BYTES = null;
+
+  // ---- 基础：UTF-8 编码 ----
+  function utf8(s) {
+    s = unescape(encodeURIComponent(s));
+    var out = [], i, c;
+    for (i = 0; i < s.length; i++) {
+      c = s.charCodeAt(i);
+      if (c < 0x80) out.push(c);
+      else if (c < 0x800) out.push(0xC0 | (c >> 6), 0x80 | (c & 63));
+      else out.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    }
+    return new Uint8Array(out);
+  }
+
+  // ---- SHA-256 ----
+  var K = [0x428A2F98,0x71374491,0xB5C0FBCF,0xE9B5DBA5,0x3956C25B,0x59F111F1,0x923F82A4,0xAB1C5ED5,
+           0xD807AA98,0x12835B01,0x243185BE,0x550C7DC3,0x72BE5D74,0x80DEB1FE,0x9BDC06A7,0xC19BF174,
+           0xE49B69C1,0xEFBE4786,0x0FC19DC6,0x240CA1CC,0x2DE92C6F,0x4A7484AA,0x5CB0A9DC,0x76F988DA,
+           0x983E5152,0xA831C66D,0xB00327C8,0xBF597FC7,0xC6E00BF3,0xD5A79147,0x06CA6351,0x14292967,
+           0x27B70A85,0x2E1B2138,0x4D2C6DFC,0x53380D13,0x650A7354,0x766A0ABB,0x81C2C92E,0x92722C85,
+           0xA2BFE8A1,0xA81A664B,0xC24B8B70,0xC76C51A3,0xD192E819,0xD6990624,0xF40E3585,0x106AA070,
+           0x19A4C116,0x1E376C08,0x2748774C,0x34B0BCB5,0x391C0CB3,0x4ED8AA4A,0x5B9CCA4F,0x682E6FF3,
+           0x748F82EE,0x78A5636F,0x84C87814,0x8CC70208,0x90BEFFFA,0xA4506CEB,0xBEF9A3F7,0xC67178F2];
+  function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+  function sha256(msg) {                        // msg: Uint8Array -> Uint8Array(32)
+    var H = [0x6A09E667,0xBB67AE85,0x3C6EF372,0xA54FF53A,0x510E527F,0x9B05688C,0x1F83D9AB,0x5BE0CD19];
+    // 补位后总字节数 = (floor((ml+8)/64) + 1) << 6，即至少再加一个完整块。
+    // 两个踩过的坑：① 早先写成 (ml+9)>>3+64，越界；
+    //               ② 改成 (ml+71)>>6<<6 后，ml=56（正好 55+1+8=64 的块边界）
+    //                  会算成 1 块=64 字节，实际需要 2 块 → 长卡号会出错误签名。
+    var ml = msg.length, pad = (((ml + 8) >> 6) + 1) << 6;
+    var buf = new Uint8Array(pad);
+    buf.set(msg); buf[ml] = 0x80;
+    var hi = Math.floor(ml / 0x20000000), lo = (ml << 3) >>> 0;
+    buf[pad - 8] = (hi >>> 24) & 255; buf[pad - 7] = (hi >>> 16) & 255;
+    buf[pad - 6] = (hi >>> 8) & 255;  buf[pad - 5] = hi & 255;
+    buf[pad - 4] = (lo >>> 24) & 255; buf[pad - 3] = (lo >>> 16) & 255;
+    buf[pad - 2] = (lo >>> 8) & 255;  buf[pad - 1] = lo & 255;
+    var w = new Int32Array(64), i, j;
+    for (i = 0; i < pad; i += 64) {
+      for (j = 0; j < 16; j++) {
+        var o = i + j * 4;
+        w[j] = (buf[o] << 24) | (buf[o + 1] << 16) | (buf[o + 2] << 8) | buf[o + 3];
+      }
+      for (j = 16; j < 64; j++) {
+        var s0 = rotr(w[j - 15], 7) ^ rotr(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+        var s1 = rotr(w[j - 2], 17) ^ rotr(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+        w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+      }
+      var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (j = 0; j < 64; j++) {
+        var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+        var ch = (e & f) ^ (~e & g);
+        var t1 = (h + S1 + ch + K[j] + w[j]) | 0;
+        var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+        var mj = (a & b) ^ (a & c) ^ (b & c);
+        var t2 = (S0 + mj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0;
+        d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    var out = new Uint8Array(32);
+    for (i = 0; i < 8; i++) out[i * 4] = (H[i] >>> 24) & 255;
+    for (i = 0; i < 8; i++) out[i * 4 + 1] = (H[i] >>> 16) & 255;
+    for (i = 0; i < 8; i++) out[i * 4 + 2] = (H[i] >>> 8) & 255;
+    for (i = 0; i < 8; i++) out[i * 4 + 3] = H[i] & 255;
+    return out;
+  }
+
+  // ---- HMAC-SHA256（key 任意长，>64 先哈希；10MB 缓存字典避免重复计算）----
+  var _kc = {};
+  function hmacSha256(key, msg) {
+    var k = key;
+    if (k.length > 64) k = sha256(k);
+    var pad = new Uint8Array(64), i;
+    for (i = 0; i < k.length; i++) pad[i] = k[i];
+    var o = new Uint8Array(64), n = new Uint8Array(64);
+    for (i = 0; i < 64; i++) { o[i] = pad[i] ^ 0x5C; n[i] = pad[i] ^ 0x36; }
+    var inner = sha256((function () { var t = new Uint8Array(64 + msg.length); t.set(n, 0); t.set(msg, 64); return t; })());
+    return sha256((function () { var t = new Uint8Array(64 + 32); t.set(o, 0); t.set(inner, 64); return t; })());
+  }
+
+  // ---- Base32 编码（RFC4648 大写、无补位，取前 n 位）----
+  var B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  function b32(data, n) {
+    var bits = 0, acc = 0, s = '', i;
+    for (i = 0; i < data.length; i++) {
+      acc = (acc << 8) | data[i]; bits += 8;
+      while (bits >= 5) { bits -= 5; s += B32[(acc >> bits) & 31]; }
+    }
+    if (bits > 0) s += B32[(acc << (5 - bits)) & 31];
+    return s.slice(0, n);
+  }
+
+  /* ⚠️ 签名用的必须是派生的「原始 32 字节」，不是它的 hex 字符串。
+     桌面 license.py 里 SECRET 是 32 个原始字节；若这里写 utf8(SECRET)，
+     hex 串会被当成 64 个 ASCII 字符参与 HMAC —— 签出来的卡电脑一律不认。 */
+  function hex2bin(h) {
+    var a = new Uint8Array(h.length >> 1), i;
+    for (i = 0; i < a.length; i++) a[i] = parseInt(h.substr(i * 2, 2), 16);
+    return a;
+  }
+  function secretBytes() { return SECRET_BYTES || new Uint8Array(0); }
+  function sign(body, n) { return b32(hmacSha256(secretBytes(), utf8(body)), n); }
+
+  // ---- 随机 4 位十六进制（与 license.py 的 os.urandom(2).hex().upper() 等价）----
+  function rand4() {
+    var h = '';
+    try {
+      var a = new Uint8Array(2);
+      if (global.crypto && global.crypto.getRandomValues) global.crypto.getRandomValues(a);
+      else if (global.msCrypto) global.msCrypto.getRandomValues(a);
+      else for (var i = 0; i < 2; i++) a[i] = (Math.random() * 256) | 0;
+      h = ('0' + a[0].toString(16)).slice(-2) + ('0' + a[1].toString(16)).slice(-2);
+    } catch (e) { h = ('0' + ((Math.random() * 256) | 0).toString(16)).slice(-2) + ('0' + ((Math.random() * 256) | 0).toString(16)).slice(-2); }
+    return h.toUpperCase();
+  }
+
+  function fmtDate(d) {
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + (m < 10 ? '0' : '') + m + (day < 10 ? '0' : '') + day;
+  }
+  function addDays(d, n) { var t = new Date(d.getTime()); t.setDate(t.getDate() + n); return t; }
+
+  /** 生成卡号（等价 license.gen_license） */
+  function genLicense(plan, days) {
+    var exp = (plan === 'LF') ? '99991231' : fmtDate(addDays(new Date(), days));
+    var body = 'GW1-' + exp + '-' + plan + '-' + rand4();
+    return body + '-' + sign(body, 8);
+  }
+  /** 生成激活码（等价 license.gen_activation） */
+  function genActivation(licenseKey, machine) {
+    var lk = (licenseKey || '').replace(/\s/g, '').toUpperCase();
+    var mid = (machine || '').replace(/\s/g, '').toUpperCase();
+    var s = sign(lk + '|' + mid, 15);
+    while (s.length < 15) s += 'X';
+    return 'ACT-' + s.slice(0, 5) + '-' + s.slice(5, 10) + '-' + s.slice(10, 15);
+  }
+  /** 校验卡号签名（等价 license.parse_license 的前半段） */
+  function parseLicense(lk) {
+    lk = (lk || '').replace(/\s/g, '').toUpperCase();
+    var p = lk.split('-');
+    if (p.length !== 5 || p[0] !== 'GW1') return { ok: false, err: '卡号格式不正确' };
+    var body = p.slice(0, 4).join('-');
+    if (sign(body, 8) !== p[4]) return { ok: false, err: '卡号无效（签名校验失败）' };
+    if (!/^\d{8}$/.test(p[1])) return { ok: false, err: '卡号到期日异常' };
+    return { ok: true, plan: p[2], exp: p[1] };
+  }
+  /** 清洗请求码（等价 keygen_ui.clean_req） */
+  function cleanReq(s) {
+    var t = (s || '').replace(/\s/g, '').toUpperCase();
+    var i = t.indexOf('REQ-');
+    if (i > 0) t = t.slice(i);
+    return t.length >= 17 ? t.slice(0, 17) : t;
+  }
+  /** 清洗卡号
+      桌面 keygen_ui.clean_card 只处理「前面恰好是空格」这一种脏，
+      手机上手抄很容易粘上「订单号123 GW1-... 备注」，所以这里放宽成正则整段截取。
+      合法卡号输入下两者输出完全一致（等价性测试会盯住这一点）。 */
+  function cleanCard(s) {
+    var t = (s || '').replace(/\s/g, '').toUpperCase();
+    var m = /GW1-[0-9]{8}-[A-Z0-9]{2}-[0-9A-Z]{4}-[A-Z2-7]{8}/.exec(t);
+    return m ? m[0] : t;
+  }
+
+  global.PKG = {
+    SECRET: null, utf8: utf8, sha256: sha256, hmacSha256: hmacSha256, b32: b32,
+    derive: derive, unlock: unlock, isReady: isReady, secretBytes: secretBytes,
+    genLicense: genLicense, genActivation: genActivation,
+    parseLicense: parseLicense, cleanReq: cleanReq, cleanCard: cleanCard
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = global.PKG;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+
+<script>
+/* ================= UI ================= */
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var PLANS = [
+    { c: 'M1', d: 30,  n: '月卡',     p: '¥30' },
+    { c: 'Q3', d: 90,  n: '季卡',     p: '¥79' },
+    { c: 'Y1', d: 365, n: '年卡',     p: '¥289' },
+    { c: 'W5', d: 5,   n: '周卡',     p: '¥9.9' },
+    { c: 'T1', d: 3,   n: '首单体验卡', p: '试用后首单' },
+    { c: 'LF', d: 0,   n: '永久卡',   p: '私聊议价' }
+  ];
+  var NAMES = { M1: '月卡', Q3: '季卡', Y1: '年卡', W5: '周卡', T1: '首单体验卡', LF: '永久卡' };
+  var UPSELL = {
+    W5: '续费建议：周卡按天单价最高，日常使用建议直接上月卡（30 天，按天单价约省一半）；到期前找我续费即可。',
+    T1: '续费建议：体验卡结束后可续周卡（5 天）或月卡（30 天），随时找我。'
+  };
+  var TPL = '【AI 聚合模型集中营 · 授权信息】\n卡号：{card}\n激活码：{act}\n套餐：{plan}（到期 {expire}）\n\n激活方法：打开程序 → 控制台「授权信息」卡片 → 填入卡号与激活码 → 点「激活」。\n提示：换电脑或重装系统后请求码会变，届时再找我重新获取激活码即可。{extra}\n';
+  var KEY_LOG = 'phone_keygen_log_v1';
+  var cur = PLANS[0];
+
+  /* ---------- 剪贴板：iOS 上 clipboard API 在 http 下不可用，双通道兜底 ---------- */
+  function copy(text, cb) {
+    var ok = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { oldWay(); });
+        return;
+      }
+    } catch (e) { /* 落到下面 */ }
+    oldWay();
+    function oldWay() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:17px';
+        document.body.appendChild(ta); ta.focus(); ta.setSelectionRange(0, text.length);
+        ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (e) { ok = false; }
+      done(ok);
+    }
+    function done(v) { cb && cb(v); }
+  }
+  function toast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;left:50%;bottom:40px;transform:translateX(-50%);z-index:99;' +
+      'background:#21313C;color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;opacity:0;' +
+      'transition:.25s;pointer-events:none;max-width:84%;text-align:center';
+    document.body.appendChild(t);
+    requestAnimationFrame(function () { t.style.opacity = '1'; });
+    setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 300); }, 1600);
+  }
+
+  /* ---------- 套餐 ---------- */
+  $('#plans').innerHTML = PLANS.map(function (p, i) {
+    return '<div class="plan' + (i === 0 ? ' on' : '') + '" data-i="' + i + '">' +
+      '<div class="n">' + p.n + '</div><div class="p">' + p.p + '</div><div class="d">' +
+      (p.c === 'LF' ? '不限时' : p.d + ' 天') + '</div></div>';
+  }).join('');
+  $('#plans').addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('.plan') : null;
+    if (!el) return;
+    [].forEach.call(document.querySelectorAll('.plan'), function (x) { x.classList.remove('on'); });
+    el.classList.add('on');
+    cur = PLANS[+el.dataset.i];
+    $('#planTip').textContent = cur.n + ' · ' + cur.p;
+  });
+
+  /* ---------- 标签 ---------- */
+  [].forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () {
+      [].forEach.call(document.querySelectorAll('.tab'), function (x) { x.classList.remove('on'); });
+      [].forEach.call(document.querySelectorAll('.view'), function (x) { x.classList.remove('on'); });
+      t.classList.add('on');
+      $('#v-' + t.dataset.view).classList.add('on');
+      if (t.dataset.view === 'log') renderLog();
+    });
+  });
+
+  /* ---------- 主题 ---------- */
+  var saved = null;
+  try { saved = localStorage.getItem('pk_theme'); } catch (e) { }
+  if (saved) document.documentElement.dataset.theme = saved;
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.dataset.theme = 'dark';   // 夜间深色，白屏太刺眼
+  }
+  $('#themeBtn').addEventListener('click', function () {
+    var n = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = n;
+    try { localStorage.setItem('pk_theme', n); } catch (e) { }
+  });
+
+  /* ---------- 时钟 ---------- */
+  function tick() {
+    var d = new Date();
+    var p = function (x) { return (x < 10 ? '0' : '') + x; };
+    $('#clock').textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* ---------- 记录 ---------- */
+  function readLog() { try { return JSON.parse(localStorage.getItem(KEY_LOG) || '[]'); } catch (e) { return []; } }
+  function pushLog(rec) {
+    var a = readLog(); a.unshift(rec);
+    try { localStorage.setItem(KEY_LOG, JSON.stringify(a.slice(0, 120))); } catch (e) { }
+  }
+  function today() { var d = new Date(), p = function (x) { return (x < 10 ? '0' : '') + x; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  function renderLog() {
+    var all = readLog(), list = all.filter(function (r) { return (r.ts || '').slice(0, 10) === today(); });
+    $('#logStat').textContent = '本单共 ' + all.length + ' 条';
+    if (!list.length) { $('#logList').innerHTML = '<div class="empty">今天还没有发卡记录</div>'; return; }
+    $('#logList').innerHTML = list.map(function (r) {
+      // 字段名跟桌面端 keygen_log.jsonl 保持一致（license，不是 card），这样导出的流水能直接合并对账
+      return '<div class="rec"><span class="tm">' + (r.ts || '').slice(11, 16) + '</span>' +
+        '<span class="bd"><div class="id">' + (r.license || r.card || '') + '</div>' +
+        '<div class="pl">' + (NAMES[r.plan] || r.plan) + ' · 到期 ' + r.expire + ' · 请求码 ' + r.machine + '</div></span></div>';
+    }).join('');
+  }
+
+  /* ---------- 生成 ---------- */
+  function md2ymd(s) { return s.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3'); }
+
+  function buildMsg(card, act, plan, exp, extra) {
+    return TPL.replace('{card}', card).replace('{act}', act).replace('{plan}', plan)
+      .replace('{expire}', md2ymd(exp)).replace('{extra}', extra ? '\n' + extra : '');
+  }
+
+  function resultHTML(o) {
+    var ups = o.extra ? '<div class="upsell">' + o.extra + '</div>' : '';
+    return '<div class="res">' +
+      '<div class="res-h"><span class="t">' + o.title + '</span><span class="badge">' + o.badge + '</span></div>' +
+      '<div class="kv copyable"><div class="k">卡号<span class="mini" data-c="' + o.card + '">复制</span></div>' +
+      '<div class="v">' + o.card + '</div></div>' +
+      '<div class="kv copyable"><div class="k">激活码<span class="mini" data-c="' + o.act + '">复制</span></div>' +
+      '<div class="v">' + o.act + '</div></div>' +
+      '<div class="kv"><div class="k">套餐</div><div class="v" style="font-size:17px">' + o.planCN + ' · 到期 ' + md2ymd(o.exp) + '</div></div>' +
+      ups +
+      '<div class="msg" id="msgBox">' + o.msg + '</div>' +
+      '<div class="row2" style="margin-top:12px">' +
+      '<button class="go" data-role="copyall" style="margin-top:0">复制整段发给客户</button>' +
+      '</div></div>';
+  }
+
+  function bindResult(box) {
+    box.addEventListener('click', function (e) {
+      var m = e.target.closest ? e.target.closest('.mini') : null;
+      if (m) { copy(m.dataset.c, function (v) { toast(v ? '已复制' : '复制失败，请长按选中'); }); return; }
+      if (e.target.closest && e.target.closest('[data-role="copyall"]')) {
+        var b = $('#msgBox'); if (!b) return;
+        copy(b.textContent, function (v) { toast(v ? '整段已复制，去微信粘贴' : '复制失败，请长按选中'); });
+      }
+    });
+  }
+
+  function newFlow() {
+    var req = PKG.cleanReq($('#reqIn').value);
+    $('#reqIn').value = req;
+    var hint = $('#reqHint');
+    $('#newRes').innerHTML = '';          // 上一单的结果先清掉，免得误发旧卡号
+    if (!/^REQ-/.test(req) || req.length !== 17) {
+      hint.className = 'hint err';
+      hint.textContent = '请求码不对：应为 REQ- 开头、共 17 位（收到 ' + (req.length || 0) + ' 位）。让客户在控制台「授权信息」里点复制再发。';
+      return;
+    }
+    hint.className = 'hint'; hint.textContent = '格式已识别 ✔';
+    var card = PKG.genLicense(cur.c, cur.d);
+    var act = PKG.genActivation(card, req);
+    var p = PKG.parseLicense(card);
+    var exp = p.exp, plan = p.plan;
+    var extra = UPSELL[plan] || '';
+    var msg = buildMsg(card, act, NAMES[plan] || plan, exp, extra);
+    $('#newRes').innerHTML = resultHTML({
+      title: '新卡已生成', badge: '可直接发送', card: card, act: act,
+      planCN: NAMES[plan] || plan, exp: exp, msg: msg, extra: extra
+    });
+    bindResult($('#newRes'));
+    pushLog({ ts: new Date().toISOString().replace('T', ' ').slice(0, 19).replace('Z', ''), action: 'new', plan: plan, license: card, expire: md2ymd(exp), machine: req, activation: act });
+    renderLog();
+    var b = $('#msgBox');
+    if (b) setTimeout(function () { copy(b.textContent, function (v) { if (v) toast('整段已复制'); }); }, 260);
+  }
+
+  function actFlow() {
+    var c = PKG.cleanCard($('#cardIn').value);
+    var req = PKG.cleanReq($('#reqIn2').value);
+    $('#cardIn').value = c; $('#reqIn2').value = req;
+    $('#actRes').innerHTML = '';          // 上一单的结果先清掉
+    var p = PKG.parseLicense(c);
+    if (!p.ok) { toast('卡号无效：' + p.err); return; }
+    if (!/^REQ-/.test(req) || req.length !== 17) { toast('请求码不对，要 REQ- 开头 17 位'); return; }
+    var act = PKG.genActivation(c, req);
+    var extra = UPSELL[p.plan] || '';
+    var msg = buildMsg(c, act, NAMES[p.plan] || p.plan, p.exp, extra);
+    $('#actRes').innerHTML = resultHTML({
+      title: '补码已生成', badge: '换机可用', card: c, act: act,
+      planCN: NAMES[p.plan] || p.plan, exp: p.exp, msg: msg, extra: extra
+    });
+    bindResult($('#actRes'));
+    pushLog({ ts: new Date().toISOString().replace('T', ' ').slice(0, 19).replace('Z', ''), action: 'act', plan: p.plan, license: c, expire: md2ymd(p.exp), machine: req, activation: act });
+    renderLog();
+    var b = $('#msgBox');
+    if (b) setTimeout(function () { copy(b.textContent, function (v) { if (v) toast('整段已复制'); }); }, 260);
+  }
+
+  /* ---------- 口令门 ----------
+     本机存的是「派生密钥」而不是口令原文：别人拿到这台手机能直接用（本来也能），
+     但口令这件秘密不会以明文躺在浏览器存储里。 */
+  var DK_KEY = 'pk_dk_v1';
+  function getDK() { try { return localStorage.getItem(DK_KEY) || ''; } catch (e) { return ''; } }
+  function setDK(v) { try { v ? localStorage.setItem(DK_KEY, v) : localStorage.removeItem(DK_KEY); } catch (e) { } }
+
+  var gateEl = $('#gate'), gateSub = $('#gateSub');
+  if (getDK()) { PKG.unlock(getDK()); gateEl.classList.add('hide'); }
+  else { gateEl.classList.remove('hide'); }
+
+  function openGate() { gateEl.classList.remove('hide'); }
+  function doUnlock() {
+    var v = ($('#passIn').value || '').trim();
+    if (!v) { toast('先输入口令'); return; }
+    var btn = $('#passBtn');
+    btn.disabled = true; btn.textContent = '派生中…';     // 20 万轮，老手机要 1~2 秒
+    setTimeout(function () {
+      var d = PKG.derive(v);
+      PKG.unlock(d); setDK(d);
+      $('#passIn').value = '';
+      gateEl.classList.add('hide');
+      btn.disabled = false; btn.textContent = '解锁';
+      toast('已解锁');
+    }, 40);
+  }
+  $('#passBtn').addEventListener('click', doUnlock);
+  $('#passIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') doUnlock(); });
+  $('#passReset').addEventListener('click', function () {
+    if (!confirm('清掉本机记住的口令？下次打开要重新输一次。已经发出去的卡不受影响。')) return;
+    setDK(''); PKG.unlock('');
+    gateSub.textContent = '请重新输入口令（注意：换口令会让旧卡全部作废）';
+    openGate(); toast('已清空，请重新输');
+  });
+  function needUnlock() {
+    if (PKG.isReady()) return true;
+    openGate(); toast('请先解锁'); return false;
+  }
+
+  $('#btnGen').addEventListener('click', function () { if (needUnlock()) newFlow(); });
+  $('#btnGen2').addEventListener('click', function () { if (needUnlock()) actFlow(); });
+
+  /* ---------- 记录页 ---------- */
+  $('#btnExport').addEventListener('click', function () {
+    var all = readLog();
+    if (!all.length) { toast('还没有记录'); return; }
+    copy(all.map(function (r) { return JSON.stringify(r); }).join('\n'), function (v) {
+      toast(v ? '流水已复制（' + all.length + ' 条），贴回电脑存成 jsonl' : '复制失败');
+    });
+  });
+  $('#btnClear').addEventListener('click', function () {
+    if (!confirm('清空手机上的发卡记录？此操作不可恢复。')) return;
+    try { localStorage.removeItem(KEY_LOG); } catch (e) { }
+    renderLog(); toast('已清空');
+  });
+
+  /* ---------- 离线（添加到主屏幕后断网也能开） ---------- */
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* file:// 或托管不支持，忽略 */ });
+  }
+})();
+</script>
+</body>
+</html>
