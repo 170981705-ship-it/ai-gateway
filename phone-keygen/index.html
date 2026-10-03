@@ -39,9 +39,10 @@ h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.2px;flex:1}
 .ibtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;
   width:38px;height:38px;font-size:16px;cursor:pointer;display:grid;place-items:center;padding:0}
 .ibtn:active{transform:scale(.94)}
-.tabs{display:flex;gap:8px;margin-top:12px}
+.tabs{display:flex;gap:6px;margin-top:12px}
 .tab{flex:1;text-align:center;padding:10px 0;border-radius:11px;border:1px solid var(--line);
-  background:var(--card);color:var(--sub);font-size:15px;font-weight:500;cursor:pointer}
+  background:var(--card);color:var(--sub);font-size:13.5px;font-weight:500;cursor:pointer;
+  white-space:nowrap}
 .tab.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
 
 /* ---------- 卡片 ---------- */
@@ -108,6 +109,31 @@ html[data-theme="dark"] .copyable .v{color:var(--brand)}
 .rec .id{font-family:ui-monospace,Menlo,monospace;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rec .pl{font-size:12px;color:var(--sub)}
 .empty{text-align:center;color:var(--sub);font-size:13px;padding:22px 0}
+
+/* ---------- 审计 ---------- */
+.aud-stat{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.aud-s{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:9px 2px;text-align:center}
+.aud-s .n{font-size:19px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.aud-s .t{font-size:11px;color:var(--sub);margin-top:1px}
+.aud-s.risk .n{color:var(--err)}
+.aud-row{display:flex;gap:9px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.aud-row:last-child{border-bottom:0}
+.aud-row .tm{flex:none;width:58px;color:var(--sub);font-size:11.5px;font-variant-numeric:tabular-nums;padding-top:2px}
+.aud-row .bd{flex:1;min-width:0}
+.aud-row .bd .id{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;overflow-wrap:anywhere}
+.aud-row .bd .pl{font-size:11.5px;color:var(--sub);margin-top:2px;overflow-wrap:anywhere}
+.aud-tag{display:inline-block;font-size:11px;border-radius:999px;padding:1px 8px;font-weight:600;margin-right:5px}
+.aud-tag.new{background:var(--brand-l);color:var(--brand-d)}
+.aud-tag.re{background:var(--brand-l);color:var(--brand-d)}
+.aud-tag.warn{background:rgba(192,128,58,.16);color:var(--warn)}
+.aud-tag.bad{background:rgba(196,88,75,.14);color:var(--err)}
+.aud-warn{font-size:13px;color:var(--warn);background:var(--card);border-left:3px solid var(--warn);
+  border-radius:0 8px 8px 0;padding:9px 11px;margin-top:11px;line-height:1.6}
+.aud-note{font-size:12px;color:var(--sub);margin-top:8px;line-height:1.6}
+textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--bg);color:var(--ink);
+  padding:11px 12px;font-size:14px;font-family:ui-monospace,Menlo,monospace;outline:none;resize:vertical}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--brand-l);
+  border-radius:5px;padding:1px 5px;color:var(--brand-d)}
 footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-align:center}
 .view{display:none}.view.on{display:block}
 
@@ -157,6 +183,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     <div class="tab on" data-view="new" data-page-node-id="9LPA7et4H8QvgoaolcH8Q8">新客户发卡</div>
     <div class="tab" data-view="act" data-page-node-id="YwajyOT0lSVxDJrOhwBTWC">老客户补码</div>
     <div class="tab" data-view="log" data-page-node-id="jnIlr4AKSkCBn28WcHMWd1">今日记录</div>
+    <div class="tab" data-view="aud" data-page-node-id="audTabBtn">审计</div>
   </div>
 </header>
 
@@ -207,6 +234,46 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
       <button class="go ghost" id="btnClear" style="flex:1;color:var(--err)" data-page-node-id="YLOhsU37XjT1hWmgpiTrob">清空记录</button>
     </div>
     <p class="hint" style="margin-top:10px" data-page-node-id="jHTBN59DsmM7JPx7VdxZ8K">记录只存在这台手机浏览器里，清缓存或换手机会丢。重要的单记得顺手回头贴一封到电脑。</p>
+  </div>
+</section>
+
+<!-- ============ 审计 ============ -->
+<section class="view" id="v-aud">
+  <div class="card">
+    <p class="lbl"><b>账本概览</b><span id="audSrcTip"></span></p>
+    <div class="aud-stat">
+      <div class="aud-s"><div class="n" id="audN1">0</div><div class="t">本机</div></div>
+      <div class="aud-s"><div class="n" id="audN2">0</div><div class="t">导入</div></div>
+      <div class="aud-s"><div class="n" id="audN3">0</div><div class="t">去重</div></div>
+      <div class="aud-s risk"><div class="n" id="audN4">0</div><div class="t">风险卡</div></div>
+    </div>
+    <p class="hint">手机只留最近 120 条，<b>全量账要从电脑搬过来</b>：电脑上跑 <code>python 发卡审计.py 导出</code>
+      拿到 jsonl，用微信传到「文件」，再点下面的「从文件选」。没有导入也能用，只是只能看到本机发过的。</p>
+  </div>
+
+  <div class="card">
+    <p class="lbl"><b>查一张卡</b><span id="audKwTip"></span></p>
+    <input type="text" id="audIn" placeholder="GW1-20261101-M1-9A5E（后半段可不输）"
+           autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+           data-page-node-id="audInEl">
+    <button class="go" id="btnAudSearch" style="font-size:16px;padding:14px 0">查：补过几次 / 给了谁</button>
+    <div class="row2" style="margin-top:10px">
+      <button class="go ghost" id="btnAudRisk" style="flex:1">一卡多机清单</button>
+      <button class="go ghost" id="btnAudExport" style="flex:1">导出合并账</button>
+    </div>
+    <div id="audOut"></div>
+  </div>
+
+  <div class="card">
+    <p class="lbl"><b>导入账本（电脑 → 手机）</b><span id="audImpTip"></span></p>
+    <input type="file" id="ledgerFile" accept=".jsonl,.txt,.json" style="display:none"
+           data-page-node-id="ledgerFileEl">
+    <button class="go ghost" id="btnAudImport" style="margin-top:0">从文件选（jsonl）</button>
+    <textarea id="audPaste" rows="3" placeholder="粘不进文件时，把 jsonl 整段贴这里（微信里长按复制的）"
+              style="margin-top:10px"></textarea>
+    <button class="go ghost" id="btnAudPaste" style="margin-top:9px">粘贴并账</button>
+    <button class="go ghost" id="btnAudClearLedger" style="margin-top:9px;color:var(--err)">清空导入的账本</button>
+    <p class="hint">导入的账本只存在这台手机上。换手机要重新导一次；清缓存也会丢，重要的账请「导出合并账」存一份。</p>
   </div>
 </section>
 
@@ -521,6 +588,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
       t.classList.add('on');
       $('#v-' + t.dataset.view).classList.add('on');
       if (t.dataset.view === 'log') renderLog();
+      if (t.dataset.view === 'aud') { renderAudStats(); audOut(audSearch($('#audIn').value)); }
     });
   });
 
@@ -586,6 +654,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
       '<div class="v">' + o.act + '</div></div>' +
       '<div class="kv"><div class="k">套餐</div><div class="v" style="font-size:17px">' + o.planCN + ' · 到期 ' + md2ymd(o.exp) + '</div></div>' +
       ups +
+      (o.warn || '') +
       '<div class="msg" id="msgBox">' + o.msg + '</div>' +
       '<div class="row2" style="margin-top:12px">' +
       '<button class="go" data-role="copyall" style="margin-top:0">复制整段发给客户</button>' +
@@ -627,6 +696,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     bindResult($('#newRes'));
     pushLog({ ts: stamp(), action: 'new', plan: plan, license: card, expire: md2ymd(exp), machine: req, activation: act });
     renderLog();
+    renderAudStats();
     var b = $('#msgBox');
     if (b) setTimeout(function () { copy(b.textContent, function (v) { if (v) toast('整段已复制'); }); }, 260);
   }
@@ -639,16 +709,36 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     var p = PKG.parseLicense(c);
     if (!p.ok) { toast('卡号无效：' + p.err); return; }
     if (!/^REQ-/.test(req) || req.length !== 17) { toast('请求码不对，要 REQ- 开头 17 位'); return; }
+
+    /* 补码前先查账：这张卡是不是已经补给过别人了。
+       一卡多机是这个工具最大的风控点（同一个人拿两台机器各激活一次），
+       所以只在「账里见过这张卡 + 当前这台机器没出现过」时拦一下，
+       已知机器的老单直接放行，免得熟客补码还要每次确认。 */
+    var pre = audPreCheck(c, req);
+    if (pre.seen && !pre.known && pre.n >= 1) {
+      if (!confirm('这张卡账里已经补过 ' + pre.seen + ' 次 / ' + pre.n + ' 台机器：\n' +
+        pre.machines.map(mask).join('\n') + '\n\n' +
+        '现在这个请求码不在其中，发出去就变成第 ' + (pre.n + 1) + ' 台机器。\n继续吗？')) {
+        toast('已取消，没发出去');
+        return;
+      }
+    }
     var act = PKG.genActivation(c, req);
     var extra = UPSELL[p.plan] || '';
     var msg = buildMsg(c, act, NAMES[p.plan] || p.plan, p.exp, extra);
+    var warn = '';
+    if (!pre.seen) warn = '<div class="aud-warn">账本里没有这张卡（多半是电脑那边发的、还没导账本），这一单不会留下审计记录。</div>';
+    else if (pre.known) warn = '<div class="aud-warn">这台机器之前补过码，这串激活码跟上次是同一条。</div>';
+    else warn = '<div class="aud-warn">已补过 ' + pre.seen + ' 次 / ' + pre.n + ' 台机器，这是第 ' + (pre.n + 1) + ' 台 —— 一卡多机。</div>';
+
     $('#actRes').innerHTML = resultHTML({
       title: '补码已生成', badge: '换机可用', card: c, act: act,
-      planCN: NAMES[p.plan] || p.plan, exp: p.exp, msg: msg, extra: extra
+      planCN: NAMES[p.plan] || p.plan, exp: p.exp, msg: msg, extra: extra, warn: warn
     });
     bindResult($('#actRes'));
     pushLog({ ts: stamp(), action: 'act', plan: p.plan, license: c, expire: md2ymd(p.exp), machine: req, activation: act });
     renderLog();
+    renderAudStats();
     var b = $('#msgBox');
     if (b) setTimeout(function () { copy(b.textContent, function (v) { if (v) toast('整段已复制'); }); }, 260);
   }
@@ -676,6 +766,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
       $('#passIn').value = '';
       gateEl.classList.add('hide');
       btn.disabled = false; btn.textContent = '解锁';
+      renderAudStats();                 // 解锁后审计里的打码要还原
       toast('已解锁');
     }, 40);
   }
@@ -706,8 +797,218 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
   $('#btnClear').addEventListener('click', function () {
     if (!confirm('清空手机上的发卡记录？此操作不可恢复。')) return;
     try { localStorage.removeItem(KEY_LOG); } catch (e) { }
-    renderLog(); toast('已清空');
+    renderLog(); renderAudStats(); toast('已清空');
   });
+
+  /* ---------- 审计（= 桌面「发卡审计.py」的手机版）----------
+     手机上账只有两个来源：① 本机发卡记录（最多 120 条）
+     ② 从电脑导进来的全量账本 jsonl。两源按「卡号+请求码+时间」去重合起来，
+     就能回答三件事：这张卡补过几次？给了哪几台机器（多机＝封号风险）？
+     账里记的激活码有没有抄错（用当前口令重算一遍对不对得上）。 */
+  var LEDGER_KEY = 'pk_ledger_v1';
+  function readLedger() { try { return JSON.parse(localStorage.getItem(LEDGER_KEY) || '[]'); } catch (e) { return []; } }
+  function saveLedger(a) { try { localStorage.setItem(LEDGER_KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+  function keyOf(r) { return (r.license || '') + '|' + (r.machine || '') + '|' + (r.ts || ''); }
+
+  function allRecs() {
+    var out = [], seen = {};
+    [[readLog(), '本机'], [readLedger(), '导入']].forEach(function (pair) {
+      (pair[0] || []).forEach(function (r) {
+        var k = keyOf(r);
+        if (!k || seen[k]) return;
+        seen[k] = 1;
+        var c = {}; for (var q in r) c[q] = r[q];
+        c.src = pair[1];
+        out.push(c);
+      });
+    });
+    return out;
+  }
+  /** 这一张卡「补码」补过几台机器。
+      统计口径必须跟桌面 发卡审计.py 一致：只看补码记录（action=act），不算首发那条。
+      首发 + 换机补码是正常业务，要是把首发那台也算进去，每张卡都会变成「一卡多机」，
+      风险项就全是噪声了。 */
+  function machinesOf(all, card) {
+    var m = {}, list = [];
+    all.forEach(function (r) {
+      if (r.license === card && r.action !== 'new' && r.machine && !m[r.machine]) {
+        m[r.machine] = 1; list.push(r.machine);
+      }
+    });
+    return { n: list.length, list: list };
+  }
+  function tsCmp(a, b) { return String(a || '').localeCompare(String(b || '')); }
+  /** 没解锁就把卡号打码，别让外人看全 */
+  function mask(s) {
+    s = s || '-';
+    return PKG.isReady() ? s : s.slice(0, 11) + '••••' + s.slice(-4);
+  }
+  /** 重算激活码，确认账里记的这串没抄错 */
+  function actOK(r) {
+    if (!PKG.isReady() || !r.activation) return null;
+    try { return PKG.genActivation(r.license, r.machine) === r.activation; } catch (e) { return null; }
+  }
+
+  function audStats() {
+    var all = allRecs(), g = {};
+    all.forEach(function (r) { if (r.license) g[r.license] = 1; });
+    var risk = Object.keys(g).filter(function (c) { return machinesOf(all, c).n > 1; }).length;
+    return { local: readLog().length, led: readLedger().length, dedup: all.length, risk: risk };
+  }
+  function renderAudStats() {
+    var s = audStats();
+    $('#audN1').textContent = s.local;
+    $('#audN2').textContent = s.led;
+    $('#audN3').textContent = s.dedup;
+    $('#audN4').textContent = s.risk;
+    $('#audSrcTip').textContent = s.led ? '已导入' : '只本机';
+    $('#audKwTip').textContent = s.dedup ? '共 ' + s.dedup + ' 条' : '';
+    $('#audImpTip').textContent = s.led ? s.led + ' 条' : '';
+  }
+  function audOut(html) { $('#audOut').innerHTML = html; }
+
+  /** 查一张卡：首发时间、补码次数、给了哪几台机器、码有没有抄错 */
+  function audSearch(kw) {
+    kw = (kw || '').replace(/\s/g, '').toUpperCase();
+    var m = /GW1-[0-9]{8}-[A-Z0-9]{2}-[0-9A-Z]{4}/.exec(kw);
+    if (m) kw = m[0];
+    else if (/^(REQ-|ACT-)/.test(kw)) return '<div class="empty">这里要输<b>卡号</b>（可以只输前半段），不是请求码/激活码</div>';
+    if (kw.length < 4) return '<div class="empty">卡号太短，至少输 4 位</div>';
+
+    var all = allRecs();
+    var cards = {};
+    all.forEach(function (r) { if ((r.license || '').indexOf(kw) >= 0) (cards[r.license] = cards[r.license] || []).push(r); });
+    var keys = Object.keys(cards);
+    if (!keys.length) return '<div class="aud-warn" style="color:var(--sub);border-left-color:var(--line)">' +
+      '账里没有这张卡。要么它不在本机发过（去「导入账本」把电脑的账拉过来），要么卡号抄错了一位。</div>';
+
+    var html = '';
+    keys.forEach(function (c) {
+      var recs = cards[c].sort(tsCmp);
+      var first = recs[0] || {};
+      var mc = machinesOf(all, c);
+      var p = PKG.parseLicense(c);
+      var multi = mc.n > 1;
+      html += '<div style="margin-top:12px"><div class="aud-row" style="border-bottom:1px dashed var(--line)">' +
+        '<div class="tm">' + esc((first.ts || '').slice(5, 10).replace('-', '/')) + '</div>' +
+        '<div class="bd"><div class="id">' + esc(mask(c)) + '</div><div class="pl">' +
+        (p.ok ? esc(NAMES[p.plan] || p.plan) + ' · 到期 ' + esc(md2ymd(p.exp)) :
+          '<span style="color:var(--err)">卡号签名对不上 —— 旧口令发的卡</span>') +
+        ' · 补码 ' + recs.length + ' 次 · ' + mc.n + ' 台机器</div></div></div>';
+      recs.forEach(function (r) {
+        var v = actOK(r);
+        var tag = r.action === 'new' ? '<span class="aud-tag new">首发</span>' : '<span class="aud-tag re">补码</span>';
+        var tag2 = (multi && r.action !== 'new') ? '<span class="aud-tag warn">多机</span>' : '';
+        var tag3 = v === false ? '<span class="aud-tag bad">抄错</span>' : '';
+        var note = v === false ? ' 重算对不上（多半漏抄一位）' : (v === null ? '' : ' 校验 ✔');
+        html += '<div class="aud-row"><div class="tm">' + esc((r.ts || '').slice(11, 16)) + '</div>' +
+          '<div class="bd"><div class="id">' + tag + tag2 + tag3 + esc(mask(r.machine)) + '</div>' +
+          '<div class="pl">' + esc(mask(r.activation || '')) + note + ' · ' + esc(r.src || '') + '</div></div></div>';
+      });
+      html += '</div>';
+    });
+    return html;
+  }
+
+  /** 一卡多机清单 */
+  function audRisk() {
+    var all = allRecs(), g = {};
+    all.forEach(function (r) { if (r.license) (g[r.license] = g[r.license] || []).push(r); });
+    var keys = Object.keys(g).filter(function (c) { return machinesOf(all, c).n > 1; });
+    if (!keys.length) return '<div class="empty">没有一卡多机 ✔<br><span style="font-size:12px">账里每张卡都只发给过一台机器</span></div>';
+    var html = '<div class="aud-warn">有 ' + keys.length + ' 张卡补给了多台机器。' +
+      '客户自称换电脑属正常；但同一个人拿两张机器各激活一次也是这个样子 —— 自己心里有数。</div>';
+    keys.forEach(function (c) {
+      var mc = machinesOf(all, c);
+      html += '<div class="aud-row"><div class="tm">×' + mc.n + '</div><div class="bd">' +
+        '<div class="id">' + esc(mask(c)) + '</div><div class="pl">' +
+        mc.list.map(mask).join('<br>') + '</div></div></div>';
+    });
+    return html;
+  }
+
+  /** 把电脑的账并进来 */
+  function mergeLedger(text) {
+    var lines = String(text || '').split(/\r?\n/), cur = readLedger(), seen = {};
+    cur.forEach(function (r) { seen[keyOf(r)] = 1; });
+    var add = 0, bad = 0;
+    lines.forEach(function (l) {
+      l = l.trim();
+      if (!l) return;
+      var r = null;
+      try { r = JSON.parse(l); } catch (e) { r = null; }
+      if (!r || !r.license) { bad++; return; }
+      var k = keyOf(r);
+      if (seen[k]) return;
+      seen[k] = 1; cur.push(r); add++;
+    });
+    var ok = saveLedger(cur);
+    renderAudStats();
+    if (!$('#audPaste')) return;
+    $('#audPaste').value = '';
+    if (ok) toast('并账完成：新增 ' + add + ' 条' + (bad ? '（跳过 ' + bad + ' 行）' : ''));
+    else toast('手机存不下这么多（' + cur.length + ' 条），先导出备份再清一下');
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* ---------- 补码前先查账：这张卡以前给谁补过 ---------- */
+  function audPreCheck(card, req) {
+    var all = allRecs();
+    var hit = all.filter(function (r) { return r.license === card; });
+    if (!hit.length) return { seen: 0, n: 0, machines: [], known: false };
+    var mc = machinesOf(all, card);
+    return { seen: hit.length, n: mc.n, machines: mc.list, known: mc.list.indexOf(req) >= 0 };
+  }
+
+  $('#btnAudSearch').addEventListener('click', function () {
+    var v = $('#audIn').value;
+    audOut(audSearch(v));
+  });
+  $('#audIn').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { audOut(audSearch(this.value)); }
+  });
+  $('#btnAudRisk').addEventListener('click', function () { audOut(audRisk()); });
+  $('#btnAudExport').addEventListener('click', audExport);
+  $('#btnAudImport').addEventListener('click', function () {
+    var f = $('#ledgerFile');
+    if (f) f.click();
+  });
+  $('#ledgerFile').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = '';                       // 选同一个文件也能再触发
+    if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      mergeLedger(fr.result);
+      audStats();
+    };
+    fr.onerror = function () { toast('读不了这个文件，试试贴文本'); };
+    fr.readAsText(file, 'utf-8');
+  });
+  $('#btnAudPaste').addEventListener('click', function () {
+    var t = $('#audPaste').value;
+    if (!t.trim()) { toast('先粘贴一段 jsonl'); return; }
+    mergeLedger(t);
+  });
+  $('#btnAudClearLedger').addEventListener('click', function () {
+    if (!readLedger().length) { toast('本来就没导入过'); return; }
+    if (!confirm('清空导入的账本？本机发卡记录不受影响。')) return;
+    try { localStorage.removeItem(LEDGER_KEY); } catch (e) { }
+    renderAudStats(); audOut(''); toast('已清空导入账本');
+  });
+
+  function audExport() {
+    var all = allRecs();
+    if (!all.length) { toast('账是空的'); return; }
+    copy(all.map(function (r) { return JSON.stringify(r); }).join('\n'), function (v) {
+      toast(v ? '合并账已复制 ' + all.length + ' 条，贴回电脑存成 .jsonl' : '复制失败，请长按选中');
+    });
+  }
 
   /* ---------- 离线（添加到主屏幕后断网也能开） ---------- */
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
