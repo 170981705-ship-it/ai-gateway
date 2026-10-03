@@ -882,19 +882,26 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     if (!keys.length) return '<div class="aud-warn" style="color:var(--sub);border-left-color:var(--line)">' +
       '账里没有这张卡。要么它不在本机发过（去「导入账本」把电脑的账拉过来），要么卡号抄错了一位。</div>';
 
-    var html = '';
+      var html = '';
     keys.forEach(function (c) {
       var recs = cards[c].sort(tsCmp);
       var first = recs[0] || {};
       var mc = machinesOf(all, c);
       var p = PKG.parseLicense(c);
       var multi = mc.n > 1;
+      var isVoid = false;
+      recs.forEach(function (r) { if (r.void) isVoid = true; });
+      var vTag = isVoid ? '<span class="aud-tag bad">已作废</span>' : '';
       html += '<div style="margin-top:12px"><div class="aud-row" style="border-bottom:1px dashed var(--line)">' +
         '<div class="tm">' + esc((first.ts || '').slice(5, 10).replace('-', '/')) + '</div>' +
-        '<div class="bd"><div class="id">' + esc(mask(c)) + '</div><div class="pl">' +
+        '<div class="bd"><div class="id">' + vTag + esc(mask(c)) + '</div><div class="pl">' +
         (p.ok ? esc(NAMES[p.plan] || p.plan) + ' · 到期 ' + esc(md2ymd(p.exp)) :
           '<span style="color:var(--err)">卡号签名对不上 —— 旧口令发的卡</span>') +
         ' · 补码 ' + recs.length + ' 次 · ' + mc.n + ' 台机器</div></div></div>';
+      if (isVoid) {
+        html += '<div class="aud-warn" style="color:var(--sub);border-left-color:var(--line)">' +
+          '这张卡在电脑账本里已作废，别发给客户。</div>';
+      }
       recs.forEach(function (r) {
         var v = actOK(r);
         var tag = r.action === 'new' ? '<span class="aud-tag new">首发</span>' : '<span class="aud-tag re">补码</span>';
