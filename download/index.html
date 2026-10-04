@@ -113,6 +113,7 @@
   <h2>还要看别的</h2>
   <div class="card">
     <p class="kv" style="margin:0"><b>使用手册：</b><span id="lnk-manual"></span><br>
+      <b>怎么接 WorkBuddy（3 步，不用填 Key）：</b><span id="lnk-wb"></span><br>
       <b>手机端激活码工具（PWA）：</b><span id="lnk-phone"></span></p>
   </div>
 
@@ -125,8 +126,11 @@
     exe: "https://cailiaoshujukugengxin-1425736255.cos.ap-shanghai.myqcloud.com/ai-gateway/AIModelGateway_Setup_v1.3.11.exe",
     zip: "https://cailiaoshujukugengxin-1425736255.cos.ap-shanghai.myqcloud.com/ai-gateway/AIModelGateway_Public.zip",
     manual: "https://cailiaoshujukugengxin-1425736255.cos.ap-shanghai.myqcloud.com/ai-gateway/manual.html",
+    wbg: "./workbuddy-guide.md",
     phone: "https://170981705-ship-it.github.io/ai-gateway/phone-keygen/"
   };
+  document.getElementById("lnk-wb").innerHTML =
+    '<a href="' + D.wbg + '" target="_blank" rel="noopener">点击查看接入说明</a>';
   document.getElementById("btn-exe").href = D.exe;
   document.getElementById("btn-zip").href = D.zip;
   document.getElementById("lnk-manual").innerHTML =
