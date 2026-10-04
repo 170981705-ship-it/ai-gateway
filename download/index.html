@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI 模型网关 · 客户端下载</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --main:#7B93A4;
+    --deep:#2F4858;
+    --body:#5A6B7A;
+    --tint:#EDF1F4;
+    --line:#DCE3E9;
+    --warn:#C2705F;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;background:var(--tint);color:var(--deep);
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;
+    line-height:1.6;padding:0 0 40px;
+  }
+  header{background:#fff;padding:34px 20px 28px;text-align:center;box-shadow:0 2px 14px rgba(47,72,88,.06)}
+  header h1{margin:0;font-size:26px;letter-spacing:1px}
+  header .sub{margin:8px 0 0;font-size:14px;color:var(--body)}
+  .bar{height:4px;background:var(--main)}
+  main{max-width:680px;margin:0 auto;padding:0 16px}
+  .ver{display:inline-block;margin:18px 0 6px;background:#fff;border:1px solid var(--line);
+       color:var(--body);font-size:13px;padding:4px 12px;border-radius:999px}
+  h2{font-size:17px;margin:30px 0 12px;padding-left:11px;border-left:4px solid var(--main)}
+  .card{background:#fff;border-radius:14px;padding:18px 18px 16px;
+        box-shadow:0 2px 12px rgba(47,72,88,.07);margin-bottom:14px}
+  .dl{display:block;text-decoration:none;color:#fff;border-radius:14px;padding:18px 18px 16px;
+      background:var(--main);box-shadow:0 4px 16px rgba(123,147,164,.35);margin-bottom:14px}
+  .dl .t{font-size:19px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dl .t .tag{font-size:12px;font-weight:400;background:rgba(255,255,255,.22);
+              padding:2px 9px;border-radius:999px}
+  .dl .d{margin-top:8px;font-size:14px;color:rgba(255,255,255,.88)}
+  .dl .m{margin-top:10px;font-size:12.5px;color:rgba(255,255,255,.75)}
+  .dl.alt{background:#fff;color:var(--deep);border:1px solid var(--line);box-shadow:none}
+  .dl.alt .d{color:var(--body)}.dl.alt .m{color:var(--body)}
+  .dl.alt .t .tag{background:var(--tint);color:var(--body)}
+  .note{font-size:13px;color:var(--body);margin:8px 2px 0}
+  ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;position:relative;padding:8px 0 8px 40px;
+              border-bottom:1px dashed var(--line);font-size:15px}
+  ol.steps li:last-child{border-bottom:none}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:24px;height:24px;
+    border-radius:50%;background:var(--main);color:#fff;font-size:13px;text-align:center;line-height:24px}
+  ol.steps li small{display:block;color:var(--body);font-size:13px}
+  .kv{font-size:13.5px;color:var(--body);word-break:break-all}
+  .kv b{color:var(--deep);font-weight:600}
+  .md5{font-family:Consolas,Menlo,monospace;font-size:12.5px;color:var(--body);
+       background:var(--tint);border-radius:8px;padding:8px 10px;margin-top:6px;word-break:break-all}
+  .warnbox{background:#FFF6F3;border:1px solid #F0D3CB;border-radius:12px;padding:14px 16px;
+           font-size:13.5px;color:#8A4A3A}
+  .warnbox b{color:var(--warn)}
+  footer{text-align:center;font-size:12.5px;color:var(--body);margin-top:34px}
+  .watermark{height:6px;background:linear-gradient(90deg,var(--main),#9DB1C0,var(--main))}
+  @media (max-width:420px){
+    header h1{font-size:22px}
+    .dl .t{font-size:17px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>AI 模型网关</h1>
+  <p class="sub">聚合多家 AI 接口的本地网关 · 自动择优 · 断线自动切换</p>
+</header>
+<div class="bar"></div>
+
+<main>
+  <span class="ver">当前版本 v1.3.11 · 2026-10-02 发布</span>
+
+  <h2>选择你的下载方式</h2>
+
+  <a class="dl" id="btn-exe" href="#" download>
+    <span class="t">一键安装版 <span class="tag">推荐</span></span>
+    <span class="d">下载后双击跟着装就行，装完直接能用</span>
+    <span class="m">AIModelGateway_Setup_v1.3.11.exe · 56.5 MB · Windows 10/11</span>
+  </a>
+
+  <a class="dl alt" id="btn-zip" href="#" download>
+    <span class="t">免安装版 <span class="tag">绿色包</span></span>
+    <span class="d">解压到任意文件夹，双击主程序即可，方便拷到别的电脑</span>
+    <span class="m">AIModelGateway_Public.zip · 44.0 MB · Windows 10/11</span>
+  </a>
+
+  <p class="note">点击如果浏览器没反应：Chrome / Edge 顶部会出现「保留下载」提示，点保留即可。</p>
+
+  <h2>装好之后怎么用</h2>
+  <div class="card">
+    <ol class="steps">
+      <li>打开软件<small>双击桌面「AI 模型网关」，首次会等几秒初始化</small></li>
+      <li>输入卡密激活<small>把你买到的卡号填进去，验证通过即生效</small></li>
+      <li>填入你自己的上游 Key<small>三家永久免费通道，见软件里的《免费 API 注册指南》，不填也能先用自带通道</small></li>
+      <li>完事<small>网关地址 http://127.0.0.1:8000/v1 ，客户端/IDE 里选这个就能调</small></li>
+    </ol>
+  </div>
+
+  <h2>下载了但打不开？</h2>
+  <div class="warnbox">
+    <b>Windows 可能拦一道。</b>双击 exe 时若弹出「Windows 已保护你的电脑」，点 <b>更多信息 → 仍要运行</b>；
+    这个软件没数字签名，拦一下是正常的。第一次放行之后就不拦了。
+  </div>
+  <div class="card" style="margin-top:14px">
+    <p class="kv" style="margin:0 0 6px"><b>校验值（对得上才说明包没坏）：</b></p>
+    <div class="md5" id="md5box">安装版 MD5：7e4aa02564c8547e96585987dfe435d1<br>免安装版 MD5：661087285faaf9cb12b2457c47bdd4f8</div>
+    <p class="kv" style="margin:10px 0 0">建议用 <b>手机扫码</b> 打开本页再传到电脑，比直接下载稳。</p>
+  </div>
+
+  <h2>还要看别的</h2>
+  <div class="card">
+    <p class="kv" style="margin:0"><b>使用手册：</b><span id="lnk-manual"></span><br>
+      <b>手机端激活码工具（PWA）：</b><span id="lnk-phone"></span></p>
+  </div>
+
+  <footer>AI 聚合模型集中营 · 客户端 v1.3.11 · 支持 Windows 10 / 11</footer>
+</main>
+<div class="watermark"></div>
+
+<script>
+  var D = {
+    exe: "https://cailiaoshujukugengxin-1425736255.cos.ap-shanghai.myqcloud.com/ai-gateway/AIModelGateway_Setup_v1.3.11.exe",
+    zip: "https://cailiaoshujukugengxin-1425736255.cos.ap-shanghai.myqcloud.com/ai-gateway/AIModelGateway_Public.zip",
+    manual: "https://cailiaoshujukugengxin-1425736255.cos.ap-shanghai.myqcloud.com/ai-gateway/manual.html",
+    phone: "https://170981705-ship-it.github.io/ai-gateway/phone-keygen/"
+  };
+  document.getElementById("btn-exe").href = D.exe;
+  document.getElementById("btn-zip").href = D.zip;
+  document.getElementById("lnk-manual").innerHTML =
+    '<a href="' + D.manual + '" target="_blank" rel="noopener">点击查看使用手册</a>';
+  document.getElementById("lnk-phone").innerHTML =
+    '<a href="' + D.phone + '" target="_blank" rel="noopener">手机端激活码工具</a>';
+</script>
+</body>
+</html>
