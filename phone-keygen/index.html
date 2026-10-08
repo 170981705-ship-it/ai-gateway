@@ -61,6 +61,14 @@ h1{font-size:17px;margin:0;font-weight:600;letter-spacing:.2px;flex:1}
 .plan.on{border-color:var(--brand);background:var(--brand-l)}
 .plan.on .n{color:var(--brand-d)}
 html[data-theme="dark"] .plan.on .n{color:var(--brand)}
+.genrow{display:flex;align-items:center;flex-wrap:wrap;margin-top:12px}
+.genrow .lbl{margin:0 8px 0 0}
+.genbtns{display:inline-flex;gap:6px;flex-wrap:wrap}
+.genbtn{border:1px solid var(--line);background:var(--card);color:var(--sub);border-radius:9px;
+  padding:6px 11px;font-size:13px;cursor:pointer;transition:.12s}
+.genbtn.on{border-color:var(--brand);background:var(--brand-l);color:var(--brand-d);font-weight:600}
+html[data-theme="dark"] .genbtn.on{color:var(--brand)}
+.genbtn:disabled{opacity:.4;cursor:not-allowed}
 
 /* ---------- 输入 ---------- */
 input[type=text]{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--bg);
@@ -192,6 +200,11 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
   <div class="card" data-page-node-id="qK8hBygNazFIab7pfyJOmf">
     <p class="lbl" data-page-node-id="MNelYPK7Q5IHRYT6OY6BqD"><b data-page-node-id="jFyi4QoDxT6kVKlkF1vBtv">选套餐</b><span id="planTip" data-page-node-id="Iop7lmY9b7V1gKjnPAPg8f">点一下就选好</span></p>
     <div class="plans" id="plans" data-page-node-id="RPWyi1FqzoRz5uEHF8q128"></div>
+    <div class="genrow" id="genRow" style="display:none">
+      <span class="lbl"><b>密钥世代</b></span>
+      <span class="genbtns" id="genBtns"></span>
+      <span class="hint" id="genTip" style="margin-left:8px"></span>
+    </div>
   </div>
 
   <div class="card" data-page-node-id="wQaC8WiMltFXYffXO3ggVP">
@@ -329,7 +342,28 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
   }
 
   function derive(pass) { return pbkdf2Sha256(pass, SALT, ITERS, 32); }
-  function unlock(dkHex) { SECRET = dkHex; SECRET_BYTES = hex2bin(dkHex); }
+  // 4 代密钥池：gen i 的盐 = SALT + "-G" + i（gen0 即 derive 本身，不加后缀，兼容已发卡）
+  function deriveGen(pass, gen) { return pbkdf2Sha256(pass, SALT + '-G' + gen, ITERS, 32); }
+  var CURRENT_GEN = 0;          // 当前签发世代（默认 gen0；轮换时由 UI 切）
+  var POOL = null;              // [Uint8Array×4] 或 null（未解锁）
+  function bytesToHex(b) { var s = ''; for (var i = 0; i < b.length; i++) s += (0 + b[i].toString(16)).slice(-2); return s; }
+  function unlock(dkHex) {       // 兼容旧调用：dkHex 视为 gen0
+    SECRET = dkHex; SECRET_BYTES = hex2bin(dkHex);
+    POOL = [SECRET_BYTES, null, null, null]; CURRENT_GEN = 0;
+  }
+  function unlockPool(pass) {     // 用口令派生出 4 代并解锁（推荐路径）
+    var d0 = derive(pass);
+    POOL = [hex2bin(d0), hex2bin(deriveGen(pass, 1)), hex2bin(deriveGen(pass, 2)), hex2bin(deriveGen(pass, 3))];
+    SECRET = d0; SECRET_BYTES = POOL[0]; CURRENT_GEN = 0;
+  }
+  function unlockPoolBytes(hexes) {  // 从本地存储的 4 个 hex 还原（reload 用）
+    POOL = (hexes || []).map(function (h) { return h ? hex2bin(h) : null; });
+    SECRET = (hexes && hexes[0]) ? hexes[0] : null;
+    SECRET_BYTES = POOL[0] || null; CURRENT_GEN = 0;
+  }
+  function poolHexes() { return POOL ? POOL.map(function (b) { return b ? bytesToHex(b) : null; }) : null; }
+  function setGen(g) { if (POOL && POOL[g]) { CURRENT_GEN = g; return true; } return false; }
+  function getGen() { return CURRENT_GEN; }
   function isReady() { return !!SECRET; }
   var SECRET_BYTES = null;
 
@@ -436,7 +470,7 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     for (i = 0; i < a.length; i++) a[i] = parseInt(h.substr(i * 2, 2), 16);
     return a;
   }
-  function secretBytes() { return SECRET_BYTES || new Uint8Array(0); }
+  function secretBytes() { return (POOL && POOL[CURRENT_GEN]) ? POOL[CURRENT_GEN] : (SECRET_BYTES || new Uint8Array(0)); }
   function sign(body, n) { return b32(hmacSha256(secretBytes(), utf8(body)), n); }
 
   // ---- 随机 4 位十六进制（与 license.py 的 os.urandom(2).hex().upper() 等价）----
@@ -501,7 +535,9 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
 
   global.PKG = {
     SECRET: null, utf8: utf8, sha256: sha256, hmacSha256: hmacSha256, b32: b32,
-    derive: derive, unlock: unlock, isReady: isReady, secretBytes: secretBytes,
+    derive: derive, deriveGen: deriveGen, unlock: unlock, unlockPool: unlockPool,
+    unlockPoolBytes: unlockPoolBytes, poolHexes: poolHexes, setGen: setGen, getGen: getGen,
+    isReady: isReady, secretBytes: secretBytes,
     genLicense: genLicense, genActivation: genActivation,
     parseLicense: parseLicense, cleanReq: cleanReq, cleanCard: cleanCard
   };
@@ -747,12 +783,30 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
      本机存的是「派生密钥」而不是口令原文：别人拿到这台手机能直接用（本来也能），
      但口令这件秘密不会以明文躺在浏览器存储里。 */
   var DK_KEY = 'pk_dk_v1';
-  function getDK() { try { return localStorage.getItem(DK_KEY) || ''; } catch (e) { return ''; } }
-  function setDK(v) { try { v ? localStorage.setItem(DK_KEY, v) : localStorage.removeItem(DK_KEY); } catch (e) { } }
+  function getDK() {
+    try {
+      var raw = localStorage.getItem(DK_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch (e) { return raw; }  // 旧版存的是纯 hex 串（gen0）
+    } catch (e) { return null; }
+  }
+  function setDK(v) {
+    try {
+      if (v == null) localStorage.removeItem(DK_KEY);
+      else localStorage.setItem(DK_KEY, (typeof v === 'string') ? v : JSON.stringify(v));
+    } catch (e) { }
+  }
 
   var gateEl = $('#gate'), gateSub = $('#gateSub');
-  if (getDK()) { PKG.unlock(getDK()); gateEl.classList.add('hide'); }
-  else { gateEl.classList.remove('hide'); }
+  (function () {
+    var dk = getDK();
+    if (dk) {
+      if (typeof dk === 'string') PKG.unlock(dk);          // 旧版：只有 gen0
+      else PKG.unlockPoolBytes(dk);                         // 新版：4 代池
+      gateEl.classList.add('hide');
+    } else { gateEl.classList.remove('hide'); }
+    applyGenUI();
+  })();
 
   function openGate() { gateEl.classList.remove('hide'); }
   function doUnlock() {
@@ -761,12 +815,12 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
     var btn = $('#passBtn');
     btn.disabled = true; btn.textContent = '派生中…';     // 20 万轮，老手机要 1~2 秒
     setTimeout(function () {
-      var d = PKG.derive(v);
-      PKG.unlock(d); setDK(d);
+      PKG.unlockPool(v); setDK(PKG.poolHexes());
       $('#passIn').value = '';
       gateEl.classList.add('hide');
       btn.disabled = false; btn.textContent = '解锁';
       renderAudStats();                 // 解锁后审计里的打码要还原
+      applyGenUI();
       toast('已解锁');
     }, 40);
   }
@@ -774,13 +828,37 @@ footer{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7;text-alig
   $('#passIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') doUnlock(); });
   $('#passReset').addEventListener('click', function () {
     if (!confirm('清掉本机记住的口令？下次打开要重新输一次。已经发出去的卡不受影响。')) return;
-    setDK(''); PKG.unlock('');
+    setDK(null); PKG.unlock('');
     gateSub.textContent = '请重新输入口令（注意：换口令会让旧卡全部作废）';
+    applyGenUI();
     openGate(); toast('已清空，请重新输');
   });
   function needUnlock() {
     if (PKG.isReady()) return true;
     openGate(); toast('请先解锁'); return false;
+  }
+
+  // 密钥世代选择器：解锁后显示，默认 gen0；轮换时在手机上切到对应代即可与电脑端同步
+  function applyGenUI() {
+    var row = $('#genRow'); if (!row) return;
+    if (!PKG.isReady() || !PKG.poolHexes()) { row.style.display = 'none'; return; }
+    var pool = PKG.poolHexes();
+    row.style.display = '';
+    var wrap = $('#genBtns'), html = '';
+    for (var g = 0; g < 4; g++) {
+      var ok = !!pool[g];
+      html += '<button class="genbtn' + (g === PKG.getGen() ? ' on' : '') + '" data-g="' + g + '"' +
+              (ok ? '' : ' disabled') + '>gen' + g + (ok ? '' : ' ·缺') + '</button>';
+    }
+    wrap.innerHTML = html;
+    $('#genTip').textContent = '当前签 gen' + PKG.getGen() + '（轮换后切到对应代）';
+    [].forEach.call(wrap.querySelectorAll('.genbtn'), function (b) {
+      b.addEventListener('click', function () {
+        if (b.disabled) return;
+        var g = +b.getAttribute('data-g');
+        if (PKG.setGen(g)) { applyGenUI(); toast('已切到 gen' + g); }
+      });
+    });
   }
 
   $('#btnGen').addEventListener('click', function () { if (needUnlock()) newFlow(); });
